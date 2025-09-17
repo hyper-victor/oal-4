@@ -66,12 +66,19 @@ export function CreateEventDialog({ children }: CreateEventDialogProps) {
   const onSubmit = async (data: CreateEventForm) => {
     setIsSubmitting(true)
     try {
+      // Convert datetime-local strings to ISO strings
+      const formattedData = {
+        ...data,
+        starts_at: new Date(data.starts_at).toISOString(),
+        ends_at: data.ends_at ? new Date(data.ends_at).toISOString() : undefined,
+      }
+
       const response = await fetch('/api/events/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(formattedData),
       })
 
       if (!response.ok) {

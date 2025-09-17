@@ -1,4 +1,6 @@
 import { requireAuthWithFamily } from '@/lib/auth'
+import { Sidebar } from '@/components/app/sidebar'
+import { Header } from '@/components/app/header'
 
 export default async function AppLayout({
   children,
@@ -8,23 +10,20 @@ export default async function AppLayout({
   await requireAuthWithFamily()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">FamilyHub</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              {/* Placeholder for user menu */}
-              <div className="text-sm text-gray-500">Welcome back!</div>
-            </div>
-          </div>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {children}
-      </main>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <Sidebar />
+      
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <Header />
+        
+        {/* Main content */}
+        <main className="flex-1 p-6">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

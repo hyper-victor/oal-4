@@ -114,11 +114,11 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="px-4 py-6 sm:px-0">
+    <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Family Dashboard</h1>
         <p className="mt-2 text-gray-600">
-          Welcome to your family dashboard
+          Stay connected with your family
         </p>
       </div>
 
@@ -133,8 +133,8 @@ export default async function DashboardPage() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <CreatePostDialog>
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
-                <MessageSquare className="h-5 w-5" />
+              <Button className="h-auto p-4 flex flex-col items-center gap-2 bg-black hover:bg-gray-800">
+                <Plus className="h-5 w-5" />
                 <span className="text-sm">Create Post</span>
               </Button>
             </CreatePostDialog>
@@ -188,6 +188,7 @@ export default async function DashboardPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-medium text-sm">{post.author?.display_name || 'Unknown'}</span>
+                            <Badge variant="secondary" className="text-xs">Family</Badge>
                             <span className="text-xs text-muted-foreground">
                               {formatRelativeTime(post.created_at)}
                             </span>
@@ -233,15 +234,27 @@ export default async function DashboardPage() {
               {events && events.length > 0 ? (
                 <div className="space-y-3">
                   {events.map((event: Event) => (
-                    <EventItem
-                      key={event.id}
-                      id={event.id}
-                      title={event.title}
-                      starts_at={event.starts_at}
-                      ends_at={event.ends_at}
-                      location={event.location}
-                      currentRsvp={event.rsvps?.[0]?.status || 'not_responded'}
-                    />
+                    <div key={event.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm">{event.title}</h4>
+                        <p className="text-xs text-gray-500">
+                          {new Date(event.starts_at).toLocaleDateString('en-US', { 
+                            weekday: 'short', 
+                            hour: 'numeric', 
+                            minute: '2-digit',
+                            hour12: true 
+                          })}
+                        </p>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant={event.rsvps?.[0]?.status === 'going' ? 'default' : 'outline'}
+                        className="text-xs"
+                      >
+                        {event.rsvps?.[0]?.status === 'going' ? 'Going' : 
+                         event.rsvps?.[0]?.status === 'maybe' ? 'Maybe' : 'RSVP'}
+                      </Button>
+                    </div>
                   ))}
                 </div>
               ) : (

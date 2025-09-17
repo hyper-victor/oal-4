@@ -6,17 +6,26 @@ import { createClient } from '@/lib/supabase/server'
 const createEventSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters').max(120, 'Title must be less than 120 characters'),
   description: z.string().optional(),
-  starts_at: z.string().datetime('Invalid start date'),
-  ends_at: z.string().datetime('Invalid end date').optional(),
+  starts_at: z.string().min(1, 'Start date is required'),
+  ends_at: z.string().optional(),
   location: z.string().optional()
 }).refine((data) => {
-  if (data.ends_at && new Date(data.ends_at) < new Date(data.starts_at)) {
+  // Validate that dates are valid
+  const startDate = new Date(data.starts_at)
+  if (isNaN(startDate.getTime())) {
     return false
+  }
+  
+  if (data.ends_at) {
+    const endDate = new Date(data.ends_at)
+    if (isNaN(endDate.getTime()) || endDate < startDate) {
+      return false
+    }
   }
   return true
 }, {
-  message: 'End date must be after start date',
-  path: ['ends_at']
+  message: 'Invalid date format or end date must be after start date',
+  path: ['starts_at']
 })
 
 export async function POST(request: NextRequest) {
