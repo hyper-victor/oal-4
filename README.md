@@ -105,18 +105,53 @@ src/
 
 This project is ready for Vercel deployment. The database migration should be run in your Supabase project before deploying.
 
+## 👥 Members & Invites
+
+### For Admins
+
+**Creating Invites:**
+1. Go to **Settings** → **Family Members**
+2. Click **Invite Member**
+3. Optionally enter an email address
+4. Click **Create Invite**
+5. Copy the generated code or URL to share
+
+**Managing Invites:**
+- View all pending invites in the **Pending Invites** section
+- Revoke invites by clicking the **Revoke** button
+- Invites expire after 14 days
+
+### For New Members
+
+**Joining with a Code:**
+1. Sign up for a new account at `/signup`
+2. During onboarding, select **Join with Code**
+3. Enter the 6-character invite code
+4. You'll be automatically added to the family as a member
+
+**Joining via Email Invite:**
+1. If you received an email invite, click the link
+2. Sign up or sign in
+3. You'll be automatically added to the family
+
+### Member Roles
+
+- **Admin**: Can invite/revoke members, manage family settings
+- **Member**: Can view family members, limited access to settings
+
 ## 📝 Next Steps
 
 This foundation includes:
 - ✅ User authentication (sign up/sign in)
 - ✅ Family creation and joining
-- ✅ Invitation system
+- ✅ Invitation system with codes and email invites
+- ✅ Member management (invite, revoke, role-based access)
 - ✅ Protected routes and middleware
 - ✅ Database schema with RLS
 
 Future features to add:
-- Family member management
 - Activity feeds
 - Calendar integration
 - File sharing
 - Notifications
+- Family settings and preferences

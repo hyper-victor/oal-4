@@ -1,8 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export async function getUser() {
-  const supabase = await createClient()
+export async function getServerClient() {
+  return await createClient()
+}
+
+export async function getSessionUser() {
+  const supabase = await getServerClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   
   if (error || !user) {
@@ -14,21 +18,68 @@ export async function getUser() {
     return null
   }
   
-  return user
+  return { user }
+}
+
+export async function getActiveFamilyId() {
+  const session = await getSessionUser()
+  if (!session) {
+    return null
+  }
+
+  const supabase = await getServerClient()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('active_family_id')
+    .eq('id', session.user.id)
+    .single()
+  
+  return profile?.active_family_id || null
+}
+
+export async function getCurrentUserRole(familyId: string) {
+  const session = await getSessionUser()
+  if (!session) {
+    return null
+  }
+
+  const supabase = await getServerClient()
+  const { data: member } = await supabase
+    .from('family_members')
+    .select('role')
+    .eq('family_id', familyId)
+    .eq('user_id', session.user.id)
+    .eq('status', 'active')
+    .single()
+  
+  return member?.role || null
+}
+
+export async function requireAdmin(familyId: string) {
+  const role = await getCurrentUserRole(familyId)
+  if (role !== 'admin') {
+    throw new Error('Admin access required')
+  }
+  return true
+}
+
+// Legacy functions for backward compatibility
+export async function getUser() {
+  const session = await getSessionUser()
+  return session?.user || null
 }
 
 export async function getUserProfile() {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-  
-  if (error || !user) {
+  const session = await getSessionUser()
+  if (!session) {
     return null
   }
   
+  const supabase = await getServerClient()
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', user.id)
+    .eq('id', session.user.id)
     .single()
   
   return profile
