@@ -32,12 +32,17 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 2. Navigate to **SQL Editor**
 3. Copy and paste the entire contents of `/supabase/migrations/0001_init.sql`
 4. Click **Run** to execute the migration
+5. Copy and paste the entire contents of `/supabase/migrations/0002_dashboard.sql`
+6. Click **Run** to execute the dashboard migration
 
 This will create:
 - User profiles table
 - Families table
 - Family memberships table
 - Family invites table
+- Posts table (for family updates)
+- Events table (for family events)
+- Event RSVPs table (for event responses)
 - Row Level Security (RLS) policies
 - Helper functions and RPCs
 
@@ -139,6 +144,33 @@ This project is ready for Vercel deployment. The database migration should be ru
 - **Admin**: Can invite/revoke members, manage family settings
 - **Member**: Can view family members, limited access to settings
 
+## 📝 Dashboard Features
+
+### Creating Posts
+1. Go to the **Dashboard**
+2. Click **Create Post** in the Quick Actions section
+3. Enter your message (1-5000 characters)
+4. Click **Create Post**
+5. Your post will appear in the Timeline Feed
+
+### Creating Events
+1. Go to the **Dashboard**
+2. Click **Create Event** in the Quick Actions section
+3. Fill in the event details:
+   - **Title** (required, 2-120 characters)
+   - **Start Date & Time** (required)
+   - **End Date & Time** (optional)
+   - **Location** (optional)
+   - **Description** (optional)
+4. Click **Create Event**
+5. The event will appear in the Upcoming Events widget
+
+### RSVP to Events
+1. In the **Upcoming Events** widget, find the event you want to RSVP to
+2. Click **Going**, **Maybe**, or the **⋯** menu for more options
+3. Your RSVP status will be saved and visible to other family members
+4. Each family member can RSVP independently
+
 ## 📝 Next Steps
 
 This foundation includes:
@@ -148,10 +180,13 @@ This foundation includes:
 - ✅ Member management (invite, revoke, role-based access)
 - ✅ Protected routes and middleware
 - ✅ Database schema with RLS
+- ✅ Family posts and timeline feed
+- ✅ Event creation and RSVP system
+- ✅ Dashboard with quick actions
 
 Future features to add:
-- Activity feeds
-- Calendar integration
+- Birthday tracking and celebrations
 - File sharing
 - Notifications
 - Family settings and preferences
+- Subgroups (coming soon)
