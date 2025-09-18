@@ -128,7 +128,7 @@ export function EventInviteDialog({
             Invite Family Members
           </DialogTitle>
           <p className="text-sm text-gray-600">
-            Send invitations for "{eventTitle}" to family members
+            Send invitations for &quot;{eventTitle}&quot; to family members
           </p>
         </DialogHeader>
 

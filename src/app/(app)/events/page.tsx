@@ -2,17 +2,17 @@ import { EventsPageClient } from '@/components/app/events-page-client'
 import { getActiveFamilyId } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
-interface Event {
-  id: string
-  title: string
-  description?: string
-  starts_at: string
-  ends_at?: string
-  location?: string
-  created_by: string
-  created_at: string
-  rsvps?: Array<{ user_id: string; status: string }>
-}
+// interface Event {
+//   id: string
+//   title: string
+//   description?: string
+//   starts_at: string
+//   ends_at?: string
+//   location?: string
+//   created_by: string
+//   created_at: string
+//   rsvps?: Array<{ user_id: string; status: string }>
+// }
 
 export default async function EventsPage() {
   const activeFamilyId = await getActiveFamilyId()

@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
-import { Calendar, MapPin, Clock, Users, MoreHorizontal } from 'lucide-react'
+import { Calendar, MapPin, Clock, MoreHorizontal } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,17 +39,17 @@ export function EventItem({
   const [rsvpStatus, setRsvpStatus] = useState<RSVPStatus>(currentRsvp)
   const [isUpdating, setIsUpdating] = useState(false)
 
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    })
-  }
+  // const formatDateTime = (dateString: string) => {
+  //   const date = new Date(dateString)
+  //   return date.toLocaleString('en-US', {
+  //     weekday: 'short',
+  //     month: 'short',
+  //     day: 'numeric',
+  //     hour: 'numeric',
+  //     minute: '2-digit',
+  //     hour12: true
+  //   })
+  // }
 
   const handleRsvp = async (status: RSVPStatus) => {
     setIsUpdating(true)
@@ -81,31 +81,31 @@ export function EventItem({
     }
   }
 
-  const getRsvpButtonVariant = (status: RSVPStatus) => {
-    switch (status) {
-      case 'going':
-        return 'default'
-      case 'maybe':
-        return 'secondary'
-      case 'decline':
-        return 'destructive'
-      default:
-        return 'outline'
-    }
-  }
+  // const getRsvpButtonVariant = (status: RSVPStatus) => {
+  //   switch (status) {
+  //     case 'going':
+  //       return 'default'
+  //     case 'maybe':
+  //       return 'secondary'
+  //     case 'decline':
+  //       return 'destructive'
+  //     default:
+  //       return 'outline'
+  //   }
+  // }
 
-  const getRsvpButtonText = (status: RSVPStatus) => {
-    switch (status) {
-      case 'going':
-        return 'Going'
-      case 'maybe':
-        return 'Maybe'
-      case 'decline':
-        return 'Decline'
-      default:
-        return 'RSVP'
-    }
-  }
+  // const getRsvpButtonText = (status: RSVPStatus) => {
+  //   switch (status) {
+  //     case 'going':
+  //       return 'Going'
+  //     case 'maybe':
+  //       return 'Maybe'
+  //     case 'decline':
+  //       return 'Decline'
+  //     default:
+  //       return 'RSVP'
+  //   }
+  // }
 
   const formatEventDate = (dateString: string) => {
     return format(new Date(dateString), 'MMM d, yyyy')

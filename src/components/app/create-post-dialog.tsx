@@ -92,7 +92,7 @@ export function CreatePostDialog({ children }: CreatePostDialogProps) {
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>What's happening?</FormLabel>
+                  <FormLabel>What&apos;s happening?</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Share an update with your family..."

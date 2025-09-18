@@ -7,7 +7,7 @@ import { InviteDialog } from '@/components/app/invite-dialog'
 import { EventItem } from '@/components/app/event-item'
 import { getActiveFamilyId } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
-import { Plus, Users, Calendar, MessageSquare, UserPlus, FolderPlus } from 'lucide-react'
+import { Plus, Calendar, UserPlus, FolderPlus } from 'lucide-react'
 
 interface Post {
   id: string
@@ -227,7 +227,7 @@ export default async function DashboardPage() {
             <CardHeader>
               <CardTitle>Upcoming Events</CardTitle>
               <CardDescription>
-                What's happening next
+                What&apos;s happening next
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -268,7 +268,7 @@ export default async function DashboardPage() {
           {/* This Month's Celebrations */}
           <Card>
             <CardHeader>
-              <CardTitle>This Month's Celebrations</CardTitle>
+              <CardTitle>This Month&apos;s Celebrations</CardTitle>
               <CardDescription>
                 Birthdays and special days
               </CardDescription>

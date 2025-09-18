@@ -1,14 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { CreateEventDialog } from './create-event-dialog'
 import { EventItem } from './event-item'
 import { EventDetailsModal } from './event-details-modal'
-import { Plus, Calendar, MapPin, Clock, Users, MoreHorizontal } from 'lucide-react'
-import { format, isToday, isTomorrow, isPast, isFuture } from 'date-fns'
+import { Plus, Calendar } from 'lucide-react'
+import { format } from 'date-fns'
 
 interface Event {
   id: string
@@ -30,13 +29,13 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-  const formatEventDate = (dateString: string) => {
-    return format(new Date(dateString), 'MMM d, yyyy')
-  }
+  // const formatEventDate = (dateString: string) => {
+  //   return format(new Date(dateString), 'MMM d, yyyy')
+  // }
 
-  const formatEventTime = (dateString: string) => {
-    return format(new Date(dateString), 'h:mm a')
-  }
+  // const formatEventTime = (dateString: string) => {
+  //   return format(new Date(dateString), 'h:mm a')
+  // }
 
   const getEventStatus = (event: Event) => {
     const now = new Date()
@@ -49,12 +48,12 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
     return 'past'
   }
 
-  const getRsvpCounts = (rsvps: Array<{ user_id: string; status: string }> = []) => {
-    return rsvps.reduce((counts, rsvp) => {
-      counts[rsvp.status as keyof typeof counts]++
-      return counts
-    }, { going: 0, maybe: 0, decline: 0, not_responded: 0 })
-  }
+  // const getRsvpCounts = (rsvps: Array<{ user_id: string; status: string }> = []) => {
+  //   return rsvps.reduce((counts, rsvp) => {
+  //     counts[rsvp.status as keyof typeof counts]++
+  //     return counts
+  //   }, { going: 0, maybe: 0, decline: 0, not_responded: 0 })
+  // }
 
   const todayEvents = events.filter(event => getEventStatus(event) === 'today')
   const upcomingEvents = events.filter(event => getEventStatus(event) === 'upcoming')
@@ -101,7 +100,7 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
                 All Events
               </h2>
               <div className="space-y-3">
-                {events.map((event: any) => (
+                {events.map((event: Event) => (
                   <EventItem
                     key={event.id}
                     id={event.id}
@@ -123,10 +122,10 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                Today's Events
+                Today&apos;s Events
               </h2>
               <div className="space-y-3">
-                {todayEvents.map((event: any) => (
+                {todayEvents.map((event: Event) => (
                   <div key={event.id} className="border-l-4 border-l-blue-500">
                     <EventItem
                       id={event.id}
@@ -152,7 +151,7 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
                 Upcoming Events
               </h2>
               <div className="space-y-3">
-                {upcomingEvents.map((event: any) => (
+                {upcomingEvents.map((event: Event) => (
                   <EventItem
                     key={event.id}
                     id={event.id}
@@ -177,7 +176,7 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
                 Past Events
               </h2>
               <div className="space-y-3">
-                {pastEvents.slice(0, 5).map((event: any) => (
+                {pastEvents.slice(0, 5).map((event: Event) => (
                   <div key={event.id} className="opacity-75">
                     <EventItem
                       id={event.id}

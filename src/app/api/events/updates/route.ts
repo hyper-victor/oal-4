@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
     }
     
     return NextResponse.json(updates || [])
-  } catch (error) {
+  } catch {
     // If anything fails, just return empty array
     return NextResponse.json([])
   }

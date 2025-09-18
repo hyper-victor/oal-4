@@ -9,9 +9,7 @@ import {
   Calendar, 
   UserCheck, 
   Image, 
-  Settings,
-  Search,
-  Bell
+  Settings
 } from 'lucide-react'
 
 const navigation = [

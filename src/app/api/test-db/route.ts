@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSessionUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get authenticated user
     const user = await getSessionUser()
@@ -27,13 +27,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Test if event_updates table exists
-    const { data: updates, error: updatesError } = await supabase
+    const { error: updatesError } = await supabase
       .from('event_updates')
       .select('count')
       .limit(1)
 
     // Test if event_invitations table exists
-    const { data: invitations, error: invitationsError } = await supabase
+    const { error: invitationsError } = await supabase
       .from('event_invitations')
       .select('count')
       .limit(1)

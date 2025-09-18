@@ -1,13 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { EventItem } from './event-item'
 import { EventInviteDialog } from './event-invite-dialog'
 import { 
   Calendar, 
@@ -19,7 +15,6 @@ import {
   Edit, 
   Trash2,
   Share2,
-  MoreHorizontal,
   Send
 } from 'lucide-react'
 import { format } from 'date-fns'
@@ -73,9 +68,9 @@ export function EventDetailsModal({
     if (isOpen) {
       fetchEventUpdates()
     }
-  }, [isOpen, event.id])
+  }, [isOpen, event.id, fetchEventUpdates])
 
-  const fetchEventUpdates = async () => {
+  const fetchEventUpdates = useCallback(async () => {
     setIsLoadingUpdates(true)
     try {
       const response = await fetch(`/api/events/updates?eventId=${event.id}`)
@@ -86,13 +81,13 @@ export function EventDetailsModal({
         // If API fails, just show empty state
         setEventUpdates([])
       }
-    } catch (error) {
+    } catch {
       // If API fails, just show empty state
       setEventUpdates([])
     } finally {
       setIsLoadingUpdates(false)
     }
-  }
+  }, [event.id])
 
   const formatEventDate = (dateString: string) => {
     return format(new Date(dateString), 'EEEE, MMM d, yyyy')
@@ -139,7 +134,7 @@ export function EventDetailsModal({
         setUpdateText('')
         setIsAddingUpdate(false)
       }
-    } catch (error) {
+    } catch {
       // If API fails, just show a simple message
       toast.info('Update feature coming soon!')
       setUpdateText('')
