@@ -82,11 +82,15 @@ export function EventDetailsModal({
       if (response.ok) {
         const updates = await response.json()
         setEventUpdates(updates)
+        console.log('Event updates loaded:', updates.length)
       } else {
-        console.error('Failed to fetch event updates')
+        const errorData = await response.json()
+        console.error('Failed to fetch event updates:', response.status, errorData)
+        toast.error(`Failed to load updates: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error fetching event updates:', error)
+      toast.error('Failed to load event updates')
     } finally {
       setIsLoadingUpdates(false)
     }
