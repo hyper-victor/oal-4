@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionUser, getActiveFamilyId, getServerClient } from '@/lib/auth'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // 1. Get session user and active family ID
     const session = await getSessionUser()
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Fetch family members
-    let familyMembers: any[] = []
+    let familyMembers: Array<{user_id: string; role: string; status: string; created_at: string}> = []
     try {
       const { data: members, error: membersError } = await supabase
         .from('family_members')
@@ -52,12 +52,12 @@ export async function GET(request: NextRequest) {
       } else {
         familyMembers = members || []
       }
-    } catch (error) {
-      console.log('Could not fetch family members:', error)
+    } catch {
+      console.log('Could not fetch family members')
     }
 
     // 4. Fetch pending invites
-    let pendingInvites: any[] = []
+    let pendingInvites: Array<{id: string; code: string; email: string | null; status: string; created_at: string}> = []
     try {
       const { data: invites, error: invitesError } = await supabase
         .from('family_invites')
@@ -71,8 +71,8 @@ export async function GET(request: NextRequest) {
       } else {
         pendingInvites = invites || []
       }
-    } catch (error) {
-      console.log('Could not fetch pending invites:', error)
+    } catch {
+      console.log('Could not fetch pending invites')
     }
 
     return NextResponse.json({

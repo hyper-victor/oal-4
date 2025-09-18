@@ -1,4 +1,4 @@
-import { getActiveFamilyId, getCurrentUserRole, getSessionUser } from '@/lib/auth'
+import { getActiveFamilyId, getSessionUser } from '@/lib/auth'
 import { createClient } from '@supabase/supabase-js'
 import { InviteDialog } from '@/components/app/invite-dialog'
 import { CopyLinkButton } from '@/components/app/copy-link-button'
@@ -70,7 +70,7 @@ export default async function PeoplePage() {
   }
   
   // Fetch family members
-  let familyMembers: any[] = []
+  let familyMembers: Array<{user_id: string; role: string; status: string; created_at: string}> = []
   try {
     const { data: members } = await supabase
       .from('family_members')
@@ -79,12 +79,12 @@ export default async function PeoplePage() {
       .eq('status', 'active')
     
     familyMembers = members || []
-  } catch (error) {
-    console.log('Could not fetch family members:', error)
+  } catch {
+    console.log('Could not fetch family members')
   }
   
   // Fetch pending invites
-  let pendingInvites: any[] = []
+  let pendingInvites: Array<{id: string; code: string; email: string | null; status: string; created_at: string}> = []
   try {
     const { data: invites } = await supabase
       .from('family_invites')
@@ -94,12 +94,9 @@ export default async function PeoplePage() {
       .order('created_at', { ascending: false })
     
     pendingInvites = invites || []
-  } catch (error) {
-    console.log('Could not fetch pending invites:', error)
+  } catch {
+    console.log('Could not fetch pending invites')
   }
-  
-  // Since the user has an active_family_id, they should be the family creator/admin
-  const isAdmin = true
 
   return (
     <div className="container mx-auto p-6">

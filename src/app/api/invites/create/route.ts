@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@supabase/supabase-js'
-import { getSessionUser, getActiveFamilyId, requireAdmin, getServerClient } from '@/lib/auth'
+import { getSessionUser, getActiveFamilyId } from '@/lib/auth'
 
 const createInviteSchema = z.object({
   email: z.string().email().optional(),

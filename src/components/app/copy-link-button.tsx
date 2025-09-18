@@ -14,9 +14,9 @@ export function CopyLinkButton({ inviteCode }: CopyLinkButtonProps) {
       const url = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/signup?code=${inviteCode}`
       await navigator.clipboard.writeText(url)
       toast.success('Invite URL copied to clipboard!')
-    } catch (error) {
-      toast.error('Failed to copy to clipboard')
-    }
+  } catch {
+    toast.error('Failed to copy to clipboard')
+  }
   }
 
   return (
