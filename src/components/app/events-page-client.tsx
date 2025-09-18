@@ -210,10 +210,12 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
             <p className="text-gray-500 text-center mb-6">
               Create your first family event to get started
             </p>
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Event
-            </Button>
+            <CreateEventDialog>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Event
+              </Button>
+            </CreateEventDialog>
           </CardContent>
         </Card>
       )}
