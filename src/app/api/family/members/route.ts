@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
       .neq('id', user.id) // Exclude current user
 
     if (error) {
-      console.error('Error fetching family members:', error)
       return NextResponse.json({ error: 'Failed to fetch family members' }, { status: 500 })
     }
 

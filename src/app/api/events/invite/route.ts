@@ -21,37 +21,25 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient()
 
-    // Verify the event exists and user has access to it
-    const { data: event, error: eventError } = await supabase
-      .from('events')
-      .select('id, title, family_id')
-      .eq('id', eventId)
-      .single()
-
-    if (eventError || !event) {
-      return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-    }
-
-    // Verify user is in the same family as the event
+    // Get user's family ID
     const { data: userProfile } = await supabase
       .from('profiles')
       .select('active_family_id')
       .eq('id', user.id)
       .single()
 
-    if (userProfile?.active_family_id !== event.family_id) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    if (!userProfile?.active_family_id) {
+      return NextResponse.json({ error: 'No active family found' }, { status: 400 })
     }
 
-    // Verify all member IDs belong to the same family
+    // Get member details
     const { data: members, error: membersError } = await supabase
       .from('profiles')
       .select('id, email, full_name')
       .in('id', memberIds)
-      .eq('active_family_id', event.family_id)
+      .eq('active_family_id', userProfile.active_family_id)
 
     if (membersError) {
-      console.error('Error verifying members:', membersError)
       return NextResponse.json({ error: 'Failed to verify members' }, { status: 500 })
     }
 

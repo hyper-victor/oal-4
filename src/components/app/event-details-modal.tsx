@@ -71,9 +71,7 @@ export function EventDetailsModal({
   // Load event updates when modal opens
   useEffect(() => {
     if (isOpen) {
-      // Skip loading updates for now
-      setEventUpdates([])
-      setIsLoadingUpdates(false)
+      fetchEventUpdates()
     }
   }, [isOpen, event.id])
 
@@ -152,8 +150,7 @@ export function EventDetailsModal({
   }
 
   const handleInvitePeople = () => {
-    // For now, just show a simple message
-    toast.info('Invite feature coming soon!')
+    setIsInviteDialogOpen(true)
   }
 
   const handleEditEvent = () => {
