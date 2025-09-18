@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { EventItem } from './event-item'
+import { EventInviteDialog } from './event-invite-dialog'
 import { 
   Calendar, 
   MapPin, 
@@ -18,7 +19,8 @@ import {
   Edit, 
   Trash2,
   Share2,
-  MoreHorizontal
+  MoreHorizontal,
+  Send
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
@@ -41,6 +43,17 @@ interface EventDetailsModalProps {
   onRsvpUpdate: (status: string) => void
 }
 
+interface EventUpdate {
+  id: string
+  content: string
+  created_at: string
+  author: {
+    id: string
+    full_name: string
+    avatar_url?: string
+  }
+}
+
 export function EventDetailsModal({ 
   event, 
   isOpen, 
@@ -51,6 +64,33 @@ export function EventDetailsModal({
   const [isAddingUpdate, setIsAddingUpdate] = useState(false)
   const [updateText, setUpdateText] = useState('')
   const [isSubmittingUpdate, setIsSubmittingUpdate] = useState(false)
+  const [eventUpdates, setEventUpdates] = useState<EventUpdate[]>([])
+  const [isLoadingUpdates, setIsLoadingUpdates] = useState(false)
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
+
+  // Load event updates when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchEventUpdates()
+    }
+  }, [isOpen, event.id])
+
+  const fetchEventUpdates = async () => {
+    setIsLoadingUpdates(true)
+    try {
+      const response = await fetch(`/api/events/updates?eventId=${event.id}`)
+      if (response.ok) {
+        const updates = await response.json()
+        setEventUpdates(updates)
+      } else {
+        console.error('Failed to fetch event updates')
+      }
+    } catch (error) {
+      console.error('Error fetching event updates:', error)
+    } finally {
+      setIsLoadingUpdates(false)
+    }
+  }
 
   const formatEventDate = (dateString: string) => {
     return format(new Date(dateString), 'EEEE, MMM d, yyyy')
@@ -74,12 +114,29 @@ export function EventDetailsModal({
 
     setIsSubmittingUpdate(true)
     try {
-      // TODO: Implement event updates API
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-      toast.success('Update added!')
-      setUpdateText('')
-      setIsAddingUpdate(false)
+      const response = await fetch('/api/events/updates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventId: event.id,
+          content: updateText.trim()
+        }),
+      })
+
+      if (response.ok) {
+        const newUpdate = await response.json()
+        setEventUpdates(prev => [newUpdate, ...prev])
+        toast.success('Update added!')
+        setUpdateText('')
+        setIsAddingUpdate(false)
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Failed to add update')
+      }
     } catch (error) {
+      console.error('Error adding update:', error)
       toast.error('Failed to add update')
     } finally {
       setIsSubmittingUpdate(false)
@@ -87,8 +144,7 @@ export function EventDetailsModal({
   }
 
   const handleInvitePeople = () => {
-    // TODO: Implement invite functionality
-    toast.info('Invite functionality coming soon!')
+    setIsInviteDialogOpen(true)
   }
 
   const handleEditEvent = () => {
@@ -218,7 +274,17 @@ export function EventDetailsModal({
                     onClick={handleAddUpdate}
                     disabled={isSubmittingUpdate || !updateText.trim()}
                   >
-                    {isSubmittingUpdate ? 'Adding...' : 'Add Update'}
+                    {isSubmittingUpdate ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Adding...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        Add Update
+                      </>
+                    )}
                   </Button>
                   <Button
                     size="sm"
@@ -234,10 +300,40 @@ export function EventDetailsModal({
               </div>
             )}
 
-            {/* Placeholder for updates */}
-            <div className="text-sm text-gray-500 italic">
-              No updates yet. Be the first to share an update!
-            </div>
+            {/* Event Updates */}
+            {isLoadingUpdates ? (
+              <div className="text-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
+                <p className="text-sm text-gray-500 mt-2">Loading updates...</p>
+              </div>
+            ) : eventUpdates.length === 0 ? (
+              <div className="text-sm text-gray-500 italic">
+                No updates yet. Be the first to share an update!
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {eventUpdates.map((update) => (
+                  <div key={update.id} className="border rounded-lg p-3 bg-gray-50">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-medium text-gray-600">
+                          {update.author.full_name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium text-sm">{update.author.full_name}</span>
+                          <span className="text-xs text-gray-500">
+                            {format(new Date(update.created_at), 'MMM d, h:mm a')}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-700">{update.content}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Actions */}
@@ -281,6 +377,14 @@ export function EventDetailsModal({
           </div>
         </div>
       </DialogContent>
+
+      {/* Event Invite Dialog */}
+      <EventInviteDialog
+        eventId={event.id}
+        eventTitle={event.title}
+        isOpen={isInviteDialogOpen}
+        onClose={() => setIsInviteDialogOpen(false)}
+      />
     </Dialog>
   )
 }
