@@ -1,5 +1,6 @@
 import { getActiveFamilyId, getCurrentUserRole, getServerClient } from '@/lib/auth'
 import { MemberRow } from '@/components/app/member-row'
+import { InviteDialog } from '@/components/app/invite-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, UserPlus } from 'lucide-react'
@@ -46,7 +47,7 @@ export default async function PeoplePage() {
     .select(`
       user_id,
       role,
-      profiles!inner (
+      profiles (
         id,
         display_name,
         avatar_url
@@ -101,12 +102,12 @@ export default async function PeoplePage() {
           </CardHeader>
           <CardContent className="text-center">
             {isAdmin ? (
-              <Button asChild>
-                <Link href="/settings">
+              <InviteDialog>
+                <Button>
                   <UserPlus className="mr-2 h-4 w-4" />
                   Invite a Member
-                </Link>
-              </Button>
+                </Button>
+              </InviteDialog>
             ) : (
               <p className="text-sm text-muted-foreground">
                 Contact an admin to invite more members
@@ -121,12 +122,12 @@ export default async function PeoplePage() {
               Family Members ({memberList.length})
             </h2>
             {isAdmin && (
-              <Button asChild>
-                <Link href="/settings">
+              <InviteDialog>
+                <Button>
                   <UserPlus className="mr-2 h-4 w-4" />
                   Invite Member
-                </Link>
-              </Button>
+                </Button>
+              </InviteDialog>
             )}
           </div>
           
