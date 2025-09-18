@@ -63,13 +63,6 @@ export function EventDetailsModal({
   const [isLoadingUpdates, setIsLoadingUpdates] = useState(false)
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
 
-  // Load event updates when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      fetchEventUpdates()
-    }
-  }, [isOpen, event.id, fetchEventUpdates])
-
   const fetchEventUpdates = useCallback(async () => {
     setIsLoadingUpdates(true)
     try {
@@ -88,6 +81,13 @@ export function EventDetailsModal({
       setIsLoadingUpdates(false)
     }
   }, [event.id])
+
+  // Load event updates when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchEventUpdates()
+    }
+  }, [isOpen, event.id, fetchEventUpdates])
 
   const formatEventDate = (dateString: string) => {
     return format(new Date(dateString), 'EEEE, MMM d, yyyy')
