@@ -15,6 +15,27 @@ export async function GET(request: NextRequest) {
     console.log('Exchange result:', { error: error?.message, user: !!data.user })
     
     if (!error && data.user) {
+      // Check if user has an invite code in their metadata
+      const inviteCode = data.user.user_metadata?.invite_code
+      
+      if (inviteCode) {
+        try {
+          // Accept the invite automatically
+          const { error: acceptError } = await supabase.rpc('accept_invite', {
+            p_code: inviteCode,
+          })
+          
+          if (acceptError) {
+            console.error('Error accepting invite:', acceptError)
+            // Still redirect to onboarding, but they can try to join manually
+          } else {
+            console.log('Successfully accepted invite for user:', data.user.id)
+          }
+        } catch (err) {
+          console.error('Error processing invite:', err)
+        }
+      }
+      
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
       

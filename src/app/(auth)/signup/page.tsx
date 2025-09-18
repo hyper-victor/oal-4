@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -27,7 +27,9 @@ type SignUpForm = z.infer<typeof signUpSchema>
 
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const [inviteCode, setInviteCode] = useState<string | null>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
 
   const {
@@ -38,6 +40,13 @@ export default function SignUpPage() {
     resolver: zodResolver(signUpSchema),
   })
 
+  useEffect(() => {
+    const code = searchParams.get('code')
+    if (code) {
+      setInviteCode(code)
+    }
+  }, [searchParams])
+
   const onSubmit = async (data: SignUpForm) => {
     setIsLoading(true)
     try {
@@ -47,6 +56,7 @@ export default function SignUpPage() {
         options: {
           data: {
             name: data.name,
+            invite_code: inviteCode, // Store invite code in user metadata
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
@@ -72,8 +82,18 @@ export default function SignUpPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Sign up</CardTitle>
           <CardDescription className="text-center">
-            Create a new account to get started
+            {inviteCode 
+              ? "You've been invited to join a family! Create your account to get started."
+              : "Create a new account to get started"
+            }
           </CardDescription>
+          {inviteCode && (
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-2">
+              <p className="text-sm text-blue-800 text-center">
+                <strong>Invite Code:</strong> {inviteCode}
+              </p>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
