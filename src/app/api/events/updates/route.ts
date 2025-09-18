@@ -127,20 +127,12 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (updatesError) {
-      console.error('Error fetching event updates:', updatesError)
-      console.error('Event ID:', eventId)
-      console.error('User ID:', user.id)
-      console.error('Family ID:', userProfile?.active_family_id)
       return NextResponse.json({ 
-        error: 'Failed to fetch updates', 
-        details: updatesError.message 
+        error: 'Failed to fetch updates'
       }, { status: 500 })
     }
-
-    console.log('Successfully fetched updates:', updates?.length || 0)
     return NextResponse.json(updates || [])
   } catch (error) {
-    console.error('Unexpected error fetching event updates:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -71,7 +71,9 @@ export function EventDetailsModal({
   // Load event updates when modal opens
   useEffect(() => {
     if (isOpen) {
-      fetchEventUpdates()
+      // Skip loading updates for now
+      setEventUpdates([])
+      setIsLoadingUpdates(false)
     }
   }, [isOpen, event.id])
 
@@ -83,11 +85,11 @@ export function EventDetailsModal({
         const updates = await response.json()
         setEventUpdates(updates)
       } else {
-        // If API fails, just show empty state - no error message
+        // If API fails, just show empty state
         setEventUpdates([])
       }
     } catch (error) {
-      // If API fails, just show empty state - no error message
+      // If API fails, just show empty state
       setEventUpdates([])
     } finally {
       setIsLoadingUpdates(false)
