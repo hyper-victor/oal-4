@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { eventId, memberIds } = inviteSchema.parse(body)
 
-    const supabase = createClient()
+    const supabase = await createClient()
 
     // Get user's family ID
     const { data: userProfile } = await supabase

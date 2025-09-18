@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { eventId, content } = createUpdateSchema.parse(body)
 
-    const supabase = createClient()
+    const supabase = await createClient()
 
     // Create the event update directly
     const { data: update, error: updateError } = await supabase
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Event ID is required' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = await createClient()
 
     // Simple approach: just try to fetch updates directly
     const { data: updates, error: updatesError } = await supabase
