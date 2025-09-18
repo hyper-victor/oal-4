@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     // TODO: Send email notifications here
     // For now, we'll just log the invitations
-    console.log(`Sent ${invitations.length} invitations for event "${event.title}"`)
+    console.log(`Sent ${invitations.length} invitations for event "${eventId}"`)
 
     return NextResponse.json({ 
       success: true, 
