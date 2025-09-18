@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,7 +25,7 @@ const signUpSchema = z.object({
 
 type SignUpForm = z.infer<typeof signUpSchema>
 
-export default function SignUpPage() {
+function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [inviteCode, setInviteCode] = useState<string | null>(null)
   const router = useRouter()
@@ -160,5 +160,24 @@ export default function SignUpPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Sign up</CardTitle>
+            <CardDescription className="text-center">
+              Loading...
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    }>
+      <SignUpForm />
+    </Suspense>
   )
 }
