@@ -29,7 +29,6 @@ type RSVPStatus = 'going' | 'maybe' | 'decline' | 'not_responded'
 
 export function EventsPageClient({ events }: EventsPageClientProps) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   // const formatEventDate = (dateString: string) => {
   //   return format(new Date(dateString), 'MMM d, yyyy')
@@ -218,10 +217,12 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
       )}
 
       {/* Modals */}
-      <CreateEventDialog 
-        open={isCreateDialogOpen} 
-        onOpenChange={setIsCreateDialogOpen} 
-      />
+      <CreateEventDialog>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Event
+        </Button>
+      </CreateEventDialog>
 
       {selectedEvent && (
         <EventDetailsModal
