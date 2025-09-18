@@ -11,8 +11,8 @@ const createUpdateSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Get authenticated user
-    const user = await getSessionUser()
-    if (!user) {
+    const session = await getSessionUser()
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       .from('event_updates')
       .insert({
         event_id: eventId,
-        author_id: user.id,
+        author_id: session.user.id,
         content: content.trim()
       })
       .select(`
@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Get authenticated user
-    const user = await getSessionUser()
-    if (!user) {
+    const session = await getSessionUser()
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

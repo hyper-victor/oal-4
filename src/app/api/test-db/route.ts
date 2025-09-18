@@ -5,8 +5,8 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET() {
   try {
     // Get authenticated user
-    const user = await getSessionUser()
-    if (!user) {
+    const session = await getSessionUser()
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -16,7 +16,7 @@ export async function GET() {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id, full_name, active_family_id')
-      .eq('id', user.id)
+      .eq('id', session.user.id)
       .single()
 
     if (profileError) {

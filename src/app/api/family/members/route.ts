@@ -5,8 +5,8 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET() {
   try {
     // Get authenticated user
-    const user = await getSessionUser()
-    if (!user) {
+    const session = await getSessionUser()
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -16,7 +16,7 @@ export async function GET() {
     const { data: userProfile } = await supabase
       .from('profiles')
       .select('active_family_id')
-      .eq('id', user.id)
+      .eq('id', session.user.id)
       .single()
 
     if (!userProfile?.active_family_id) {
@@ -33,7 +33,7 @@ export async function GET() {
         avatar_url
       `)
       .eq('active_family_id', userProfile.active_family_id)
-      .neq('id', user.id) // Exclude current user
+      .neq('id', session.user.id) // Exclude current user
 
     if (error) {
       return NextResponse.json({ error: 'Failed to fetch family members' }, { status: 500 })

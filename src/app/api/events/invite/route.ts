@@ -11,8 +11,8 @@ const inviteSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Get authenticated user
-    const user = await getSessionUser()
-    if (!user) {
+    const session = await getSessionUser()
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const { data: userProfile } = await supabase
       .from('profiles')
       .select('active_family_id')
-      .eq('id', user.id)
+      .eq('id', session.user.id)
       .single()
 
     if (!userProfile?.active_family_id) {
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     const invitations = memberIds.map(memberId => ({
       event_id: eventId,
       invited_user_id: memberId,
-      invited_by: user.id,
+      invited_by: session.user.id,
       status: 'pending',
       created_at: new Date().toISOString()
     }))
