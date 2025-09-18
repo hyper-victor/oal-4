@@ -7,7 +7,7 @@ import { CreateEventDialog } from './create-event-dialog'
 import { EventItem } from './event-item'
 import { EventDetailsModal } from './event-details-modal'
 import { Plus, Calendar } from 'lucide-react'
-import { format } from 'date-fns'
+// import { format } from 'date-fns'
 
 interface Event {
   id: string
