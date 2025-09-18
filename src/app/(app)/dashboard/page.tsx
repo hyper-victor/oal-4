@@ -89,7 +89,7 @@ export default async function DashboardPage() {
       rsvps:event_rsvps(user_id, status)
     `)
     .eq('family_id', activeFamilyId)
-    .gte('starts_at', new Date().toISOString())
+    .gte('starts_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) // Include events from 24 hours ago
     .order('starts_at', { ascending: true })
     .limit(5)
 
@@ -234,27 +234,15 @@ export default async function DashboardPage() {
               {events && events.length > 0 ? (
                 <div className="space-y-3">
                   {events.map((event: Event) => (
-                    <div key={event.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm">{event.title}</h4>
-                        <p className="text-xs text-gray-500">
-                          {new Date(event.starts_at).toLocaleDateString('en-US', { 
-                            weekday: 'short', 
-                            hour: 'numeric', 
-                            minute: '2-digit',
-                            hour12: true 
-                          })}
-                        </p>
-                      </div>
-                      <Button 
-                        size="sm" 
-                        variant={event.rsvps?.[0]?.status === 'going' ? 'default' : 'outline'}
-                        className="text-xs"
-                      >
-                        {event.rsvps?.[0]?.status === 'going' ? 'Going' : 
-                         event.rsvps?.[0]?.status === 'maybe' ? 'Maybe' : 'RSVP'}
-                      </Button>
-                    </div>
+                    <EventItem
+                      key={event.id}
+                      id={event.id}
+                      title={event.title}
+                      starts_at={event.starts_at}
+                      ends_at={event.ends_at}
+                      location={event.location}
+                      currentRsvp={event.rsvps?.[0]?.status || 'not_responded'}
+                    />
                   ))}
                 </div>
               ) : (

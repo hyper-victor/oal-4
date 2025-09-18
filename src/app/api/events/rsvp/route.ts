@@ -5,9 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 
 const rsvpSchema = z.object({
   eventId: z.string().uuid('Invalid event ID'),
-  status: z.enum(['going', 'maybe', 'not_responded'], {
-    errorMap: () => ({ message: 'Status must be going, maybe, or not_responded' })
-  })
+  status: z.enum(['going', 'maybe', 'decline', 'not_responded'])
 })
 
 export async function POST(request: NextRequest) {
@@ -40,7 +38,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors[0].message }, { status: 400 })
+      return NextResponse.json({ error: error.issues[0].message }, { status: 400 })
     }
     
     console.error('Unexpected error updating RSVP:', error)
