@@ -1,5 +1,4 @@
-import { getActiveFamilyId, getSessionUser } from '@/lib/auth'
-import { createClient } from '@supabase/supabase-js'
+import { getActiveFamilyId, getSessionUser, getServerClient } from '@/lib/auth'
 import { InviteDialog } from '@/components/app/invite-dialog'
 import { CopyLinkButton } from '@/components/app/copy-link-button'
 import { Button } from '@/components/ui/button'
@@ -41,17 +40,8 @@ export default async function PeoplePage() {
     )
   }
 
-  // Use service role client to bypass RLS issues
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  )
+  // Use regular client - the service role approach doesn't work in production
+  const supabase = await getServerClient()
   
   // Fetch family info
   let familyName = 'Your Family'

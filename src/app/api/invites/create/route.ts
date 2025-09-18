@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@supabase/supabase-js'
-import { getSessionUser, getActiveFamilyId } from '@/lib/auth'
+import { getSessionUser, getActiveFamilyId, getServerClient } from '@/lib/auth'
 
 const createInviteSchema = z.object({
   email: z.string().email().optional(),
@@ -40,17 +40,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 2. Use service role client to bypass RLS issues
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
+    // 2. Use regular client
+    const supabase = await getServerClient()
 
     // 3. Parse and validate request body
     const body = await request.json()
