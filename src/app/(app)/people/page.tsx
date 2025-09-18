@@ -41,21 +41,21 @@ export default async function PeoplePage() {
   const currentUserRole = await getCurrentUserRole(activeFamilyId)
   const supabase = await getServerClient()
 
-  // Get all active family members
-  const { data: members, error: membersError } = await supabase
+  // Get all active family members with a simple query
+  const { data: members, error } = await supabase
     .from('family_members')
     .select('user_id, role')
     .eq('family_id', activeFamilyId)
     .eq('status', 'active')
 
-  if (membersError) {
+  if (error) {
     return (
       <div className="container mx-auto p-6">
         <Card>
           <CardHeader>
             <CardTitle>Error</CardTitle>
             <CardDescription>
-              Failed to load family members: {membersError.message}
+              Failed to load family members: {error.message}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -63,44 +63,13 @@ export default async function PeoplePage() {
     )
   }
 
-  // Get profiles for all members
-  const userIds = members?.map(member => member.user_id) || []
-  const { data: profiles, error: profilesError } = await supabase
-    .from('profiles')
-    .select('id, display_name, avatar_url')
-    .in('id', userIds)
-
-  if (profilesError) {
-    return (
-      <div className="container mx-auto p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Error</CardTitle>
-            <CardDescription>
-              Failed to load profiles: {profilesError.message}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    )
-  }
-
-  // Combine the data
-  const combinedMembers = members?.map(member => {
-    const profile = profiles?.find(p => p.id === member.user_id)
-    return {
-      user_id: member.user_id,
-      role: member.role,
-      profiles: profile
-    }
-  }) || []
-
-  const memberList: Member[] = combinedMembers.map(member => ({
+  // Create a simple member list without profile data for now
+  const memberList: Member[] = members?.map(member => ({
     id: member.user_id,
-    display_name: member.profiles?.display_name || null,
-    avatar_url: member.profiles?.avatar_url || null,
+    display_name: `Member ${member.user_id.slice(0, 8)}`,
+    avatar_url: null,
     role: member.role,
-  }))
+  })) || []
 
   const isAdmin = currentUserRole === 'admin'
   const hasMultipleMembers = memberList.length > 1
