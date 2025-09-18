@@ -84,10 +84,12 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
           <h1 className="text-3xl font-bold text-gray-900">Events</h1>
           <p className="text-gray-600 mt-1">View and manage all family events</p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Event
-        </Button>
+        <CreateEventDialog>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Event
+          </Button>
+        </CreateEventDialog>
       </div>
 
       {/* Events Content */}
