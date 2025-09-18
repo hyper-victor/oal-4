@@ -25,6 +25,8 @@ interface EventsPageClientProps {
   events: Event[]
 }
 
+type RSVPStatus = 'going' | 'maybe' | 'decline' | 'not_responded'
+
 export function EventsPageClient({ events }: EventsPageClientProps) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
