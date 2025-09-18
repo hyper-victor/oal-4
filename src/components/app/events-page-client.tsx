@@ -108,7 +108,7 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
                     starts_at={event.starts_at}
                     ends_at={event.ends_at}
                     location={event.location}
-                    currentRsvp={event.rsvps?.[0]?.status || 'not_responded'}
+                    currentRsvp={(event.rsvps?.[0]?.status as RSVPStatus) || 'not_responded'}
                     onEventClick={() => handleEventClick(event)}
                     showDetails={true}
                   />
@@ -133,7 +133,7 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
                       starts_at={event.starts_at}
                       ends_at={event.ends_at}
                       location={event.location}
-                      currentRsvp={event.rsvps?.[0]?.status || 'not_responded'}
+                      currentRsvp={(event.rsvps?.[0]?.status as RSVPStatus) || 'not_responded'}
                       onEventClick={() => handleEventClick(event)}
                       showDetails={true}
                     />
@@ -159,7 +159,7 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
                     starts_at={event.starts_at}
                     ends_at={event.ends_at}
                     location={event.location}
-                    currentRsvp={event.rsvps?.[0]?.status || 'not_responded'}
+                    currentRsvp={(event.rsvps?.[0]?.status as RSVPStatus) || 'not_responded'}
                     onEventClick={() => handleEventClick(event)}
                     showDetails={true}
                   />
@@ -184,7 +184,7 @@ export function EventsPageClient({ events }: EventsPageClientProps) {
                       starts_at={event.starts_at}
                       ends_at={event.ends_at}
                       location={event.location}
-                      currentRsvp={event.rsvps?.[0]?.status || 'not_responded'}
+                      currentRsvp={(event.rsvps?.[0]?.status as RSVPStatus) || 'not_responded'}
                       onEventClick={() => handleEventClick(event)}
                       showDetails={true}
                     />
