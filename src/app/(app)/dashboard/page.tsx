@@ -5,6 +5,7 @@ import { CreatePostDialog } from '@/components/app/create-post-dialog'
 import { CreateEventDialog } from '@/components/app/create-event-dialog'
 import { InviteDialog } from '@/components/app/invite-dialog'
 import { EventItem } from '@/components/app/event-item'
+import { PostItem } from '@/components/app/post-item'
 import { getActiveFamilyId } from '@/lib/auth'
 import { createClient } from '@supabase/supabase-js'
 import { Plus, Calendar, UserPlus, FolderPlus } from 'lucide-react'
@@ -18,6 +19,8 @@ interface Post {
     id: string
     display_name: string
   }
+  likes?: string[]
+  comments?: any[]
 }
 
 interface Event {
@@ -63,12 +66,12 @@ export default async function DashboardPage() {
     }
   )
 
-  // Fetch latest posts
+  // Fetch latest posts with likes and comments
   let posts: Post[] = []
   try {
     const { data: postsData, error: postsError } = await supabase
       .from('posts')
-      .select('id, content, created_at, author_id')
+      .select('id, content, created_at, author_id, likes, comments')
       .eq('family_id', activeFamilyId)
       .order('created_at', { ascending: false })
       .limit(10)
@@ -118,25 +121,6 @@ export default async function DashboardPage() {
     .order('starts_at', { ascending: true })
     .limit(5)
 
-  const formatRelativeTime = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
-    
-    if (diffInHours < 1) return 'Just now'
-    if (diffInHours < 24) return `${diffInHours}h ago`
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`
-    return date.toLocaleDateString()
-  }
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
 
   return (
     <div>
@@ -205,23 +189,15 @@ export default async function DashboardPage() {
               {posts && posts.length > 0 ? (
                 <div className="space-y-4">
                   {posts.map((post: Post) => (
-                    <div key={post.id} className="border rounded-lg p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-                          {getInitials(post.author?.display_name || 'Unknown')}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-sm">{post.author?.display_name || 'Unknown'}</span>
-                            <Badge variant="secondary" className="text-xs">Family</Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {formatRelativeTime(post.created_at)}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{post.content}</p>
-                        </div>
-                      </div>
-                    </div>
+                    <PostItem
+                      key={post.id}
+                      id={post.id}
+                      content={post.content}
+                      created_at={post.created_at}
+                      author={post.author || { id: '', display_name: 'Unknown' }}
+                      initialLikesCount={post.likes?.length || 0}
+                      initialComments={post.comments || []}
+                    />
                   ))}
                 </div>
               ) : (
