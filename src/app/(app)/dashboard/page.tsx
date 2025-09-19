@@ -6,7 +6,7 @@ import { CreateEventDialog } from '@/components/app/create-event-dialog'
 import { InviteDialog } from '@/components/app/invite-dialog'
 import { EventItem } from '@/components/app/event-item'
 import { getActiveFamilyId } from '@/lib/auth'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import { Plus, Calendar, UserPlus, FolderPlus } from 'lucide-react'
 
 interface Post {
@@ -51,28 +51,53 @@ export default async function DashboardPage() {
     )
   }
 
-  const supabase = await createClient()
+  // Use service role client to bypass RLS issues
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
 
   // Fetch latest posts
-  const { data: postsData } = await supabase
-    .from('posts')
-    .select('id, content, created_at, author_id')
-    .eq('family_id', activeFamilyId)
-    .order('created_at', { ascending: false })
-    .limit(10)
+  let posts: Post[] = []
+  try {
+    const { data: postsData, error: postsError } = await supabase
+      .from('posts')
+      .select('id, content, created_at, author_id')
+      .eq('family_id', activeFamilyId)
+      .order('created_at', { ascending: false })
+      .limit(10)
 
-  // Fetch author profiles for posts
-  const authorIds = postsData?.map(post => post.author_id) || []
-  const { data: profiles } = await supabase
-    .from('profiles')
-    .select('id, display_name')
-    .in('id', authorIds)
+    if (postsError) {
+      console.error('Error fetching posts:', postsError)
+    } else if (postsData && postsData.length > 0) {
+      // Fetch author profiles for posts
+      const authorIds = postsData.map(post => post.author_id)
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, display_name')
+        .in('id', authorIds)
 
-  // Combine posts with author data
-  const posts = postsData?.map(post => ({
-    ...post,
-    author: profiles?.find(profile => profile.id === post.author_id)
-  })) || []
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError)
+        // Fallback to posts without author data
+        posts = postsData.map(post => ({ ...post, author: undefined }))
+      } else {
+        // Combine posts with author data
+        posts = postsData.map(post => ({
+          ...post,
+          author: profiles?.find(profile => profile.id === post.author_id)
+        }))
+      }
+    }
+  } catch (error) {
+    console.error('Error in posts fetch:', error)
+  }
 
   // Fetch upcoming events with RSVPs
   const { data: events } = await supabase

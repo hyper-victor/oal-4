@@ -49,8 +49,8 @@ export async function GET() {
       console.log('Could not fetch family name, using default')
     }
 
-    // 3. Fetch family members - simplified query to avoid stack depth issues
-    let familyMembers: Array<{user_id: string; role: string; status: string; created_at: string}> = []
+    // 3. Fetch family members with profile information
+    let familyMembers: Array<{user_id: string; role: string; status: string; created_at: string; email: string | null; name: string | null}> = []
     try {
       const { data: members, error: membersError } = await supabase
         .from('family_members')
@@ -60,8 +60,46 @@ export async function GET() {
       
       if (membersError) {
         console.error('Error fetching members:', membersError)
-      } else {
-        familyMembers = members || []
+      } else if (members) {
+        // Fetch profile information for each member
+        const memberIds = members.map(m => m.user_id)
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, display_name')
+          .in('id', memberIds)
+        
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError)
+          // Fallback to just user IDs if profile fetch fails
+          familyMembers = members.map(m => ({ ...m, email: null, name: null }))
+        } else {
+          // Fetch emails from auth.users for each member
+          const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers()
+          
+          if (authError) {
+            console.error('Error fetching auth users:', authError)
+            // Fallback to just display names
+            familyMembers = members.map(member => {
+              const profile = profiles?.find(p => p.id === member.user_id)
+              return {
+                ...member,
+                email: null,
+                name: profile?.display_name || null
+              }
+            })
+          } else {
+            // Combine member data with profile and auth data
+            familyMembers = members.map(member => {
+              const profile = profiles?.find(p => p.id === member.user_id)
+              const authUser = authUsers?.users?.find(u => u.id === member.user_id)
+              return {
+                ...member,
+                email: authUser?.email || null,
+                name: profile?.display_name || null
+              }
+            })
+          }
+        }
       }
     } catch (error) {
       console.log('Could not fetch family members:', error)

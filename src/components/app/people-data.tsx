@@ -12,6 +12,8 @@ interface FamilyMember {
   role: string
   status: string
   created_at: string
+  email: string | null
+  name: string | null
 }
 
 interface PendingInvite {
@@ -105,9 +107,11 @@ export function PeopleData() {
                 <div key={member.user_id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <p className="font-medium">
-                      User {member.user_id.slice(0, 8)}...
+                      {member.name || member.email || `User ${member.user_id.slice(0, 8)}...`}
                     </p>
-                    <p className="text-sm text-muted-foreground">{member.user_id}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {member.email && member.name ? member.email : member.user_id}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`px-2 py-1 rounded text-xs ${
