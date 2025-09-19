@@ -1,7 +1,8 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { 
   Home, 
@@ -9,8 +10,12 @@ import {
   Calendar, 
   UserCheck, 
   Image, 
-  Settings
+  Settings,
+  LogOut
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -23,6 +28,39 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    
+    // Get initial user
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    
+    getUser()
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const handleLogout = async () => {
+    try {
+      const supabase = createClient()
+      await supabase.auth.signOut()
+      toast.success('Signed out successfully')
+      router.push('/signin')
+    } catch (error) {
+      toast.error('Failed to sign out')
+      console.error('Logout error:', error)
+    }
+  }
 
   return (
     <div className="flex h-full w-64 flex-col bg-white border-r border-gray-200">
@@ -63,6 +101,28 @@ export function Sidebar() {
           )
         })}
       </nav>
+
+      {/* User Info and Logout */}
+      {user && (
+        <div className="border-t border-gray-200 p-4">
+          <div className="mb-3">
+            <div className="text-xs font-medium text-gray-500 mb-1">Signed in as</div>
+            <div className="text-sm text-gray-900 truncate">{user.email}</div>
+            <div className="text-xs text-gray-500">
+              {user.email_confirmed_at ? 'Verified' : 'Unverified'}
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign out
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

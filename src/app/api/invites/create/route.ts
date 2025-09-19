@@ -19,10 +19,11 @@ function generateInviteCode(): string {
 export async function POST(request: NextRequest) {
   try {
     console.log('Invite API called')
+    console.log('Request headers:', Object.fromEntries(request.headers.entries()))
     
     // 1. Get session user and active family ID
     const session = await getSessionUser()
-    console.log('Session:', session ? 'Found' : 'Not found')
+    console.log('Session:', session ? `Found user ${session.user.id}` : 'Not found')
     
     if (!session) {
       console.log('No session found, returning 401')
