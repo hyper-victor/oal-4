@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Bell, User, LogOut } from 'lucide-react'
+import { Search, Bell, User as UserIcon, LogOut } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -117,7 +117,7 @@ export function Header() {
             ) : (
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-gray-600" />
+                  <UserIcon className="h-4 w-4 text-gray-600" />
                 </div>
                 <span className="text-sm text-gray-500">Not signed in</span>
               </div>
