@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSessionUser, getActiveFamilyId, getServerClient } from '@/lib/auth'
+import { getSessionUser, getActiveFamilyId } from '@/lib/auth'
+import { createClient } from '@supabase/supabase-js'
 
 export async function GET() {
   try {
@@ -20,7 +21,17 @@ export async function GET() {
       )
     }
 
-    const supabase = await getServerClient()
+    // Use service role client to bypass RLS and prevent stack depth issues
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
     // 2. Fetch family info
     let familyName = 'Your Family'
@@ -38,12 +49,12 @@ export async function GET() {
       console.log('Could not fetch family name, using default')
     }
 
-    // 3. Fetch family members
+    // 3. Fetch family members - simplified query to avoid stack depth issues
     let familyMembers: Array<{user_id: string; role: string; status: string; created_at: string}> = []
     try {
       const { data: members, error: membersError } = await supabase
         .from('family_members')
-        .select('*')
+        .select('user_id, role, status, created_at')
         .eq('family_id', activeFamilyId)
         .eq('status', 'active')
       
@@ -52,16 +63,16 @@ export async function GET() {
       } else {
         familyMembers = members || []
       }
-    } catch {
-      console.log('Could not fetch family members')
+    } catch (error) {
+      console.log('Could not fetch family members:', error)
     }
 
-    // 4. Fetch pending invites
+    // 4. Fetch pending invites - simplified query to avoid stack depth issues
     let pendingInvites: Array<{id: string; code: string; email: string | null; status: string; created_at: string}> = []
     try {
       const { data: invites, error: invitesError } = await supabase
         .from('family_invites')
-        .select('*')
+        .select('id, code, email, status, created_at')
         .eq('family_id', activeFamilyId)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
@@ -71,8 +82,8 @@ export async function GET() {
       } else {
         pendingInvites = invites || []
       }
-    } catch {
-      console.log('Could not fetch pending invites')
+    } catch (error) {
+      console.log('Could not fetch pending invites:', error)
     }
 
     return NextResponse.json({

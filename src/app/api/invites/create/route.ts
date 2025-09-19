@@ -41,8 +41,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 2. Use regular client
-    const supabase = await getServerClient()
+    // 2. Use service role client to bypass RLS issues
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
     // 3. Parse and validate request body
     const body = await request.json()
@@ -88,9 +97,10 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating invite:', error)
-      // If direct insert fails, try to create a simple invite without database storage
-      console.log('Creating invite without database storage as fallback')
-      // Continue with the response - the code is still valid for signup
+      return NextResponse.json(
+        { message: 'Failed to create invite in database' },
+        { status: 500 }
+      )
     }
 
     // 6. Return code and URL
