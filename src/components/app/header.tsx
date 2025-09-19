@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
 export function Header() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{id: string; email: string; email_confirmed_at: string | null} | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 

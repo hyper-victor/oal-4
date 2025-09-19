@@ -29,7 +29,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{id: string; email: string; email_confirmed_at: string | null} | null>(null)
 
   useEffect(() => {
     const supabase = createClient()

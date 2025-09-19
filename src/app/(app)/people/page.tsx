@@ -39,9 +39,6 @@ export default async function PeoplePage() {
 
   // Simplified approach - use the API route instead of direct database queries
   // This prevents the page from hanging on slow database queries
-  const familyName = 'Your Family'
-  const familyMembers: Array<{user_id: string; role: string; status: string; created_at: string}> = []
-  const pendingInvites: Array<{id: string; code: string; email: string | null; status: string; created_at: string}> = []
 
   return (
     <div className="container mx-auto p-6">

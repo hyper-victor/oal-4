@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getSessionUser, getActiveFamilyId } from '@/lib/auth'
 import { createClient } from '@supabase/supabase-js'
 
@@ -45,7 +45,7 @@ export async function GET() {
       if (family) {
         familyName = family.name
       }
-    } catch (error) {
+    } catch {
       console.log('Could not fetch family name, using default')
     }
 
