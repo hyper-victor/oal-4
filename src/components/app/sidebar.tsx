@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import type { User } from '@supabase/supabase-js'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -29,7 +30,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const [user, setUser] = useState<{id: string; email?: string; email_confirmed_at: string | null} | null>(null)
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
     const supabase = createClient()

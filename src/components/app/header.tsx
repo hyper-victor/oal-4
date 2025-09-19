@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import type { User } from '@supabase/supabase-js'
 
 export function Header() {
-  const [user, setUser] = useState<{id: string; email?: string; email_confirmed_at: string | null} | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
