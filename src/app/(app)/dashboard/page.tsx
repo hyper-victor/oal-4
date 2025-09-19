@@ -1,6 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { CreatePostDialog } from '@/components/app/create-post-dialog'
 import { CreateEventDialog } from '@/components/app/create-event-dialog'
 import { InviteDialog } from '@/components/app/invite-dialog'
@@ -20,7 +19,16 @@ interface Post {
     display_name: string
   }
   likes?: string[]
-  comments?: any[]
+        comments?: Array<{
+          id: string
+          content: string
+          author_id: string
+          author?: {
+            id: string
+            display_name: string
+          }
+          created_at: string
+        }>
 }
 
 interface Event {

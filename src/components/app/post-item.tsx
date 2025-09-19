@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -11,7 +11,7 @@ interface Comment {
   id: string
   content: string
   created_at: string
-  author: {
+  author?: {
     id: string
     display_name: string
   }
@@ -169,18 +169,18 @@ export function PostItem({
     }
   }
 
-  const loadLikes = async () => {
-    try {
-      const response = await fetch(`/api/posts/likes?post_id=${id}`)
-      if (response.ok) {
-        const likesData = await response.json()
-        setLikesCount(likesData.likesCount)
-        setIsLiked(likesData.isLiked)
-      }
-    } catch (error) {
-      console.error('Error loading likes:', error)
-    }
-  }
+  // const loadLikes = async () => {
+  //   try {
+  //     const response = await fetch(`/api/posts/likes?post_id=${id}`)
+  //     if (response.ok) {
+  //       const likesData = await response.json()
+  //       setLikesCount(likesData.likesCount)
+  //       setIsLiked(likesData.isLiked)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error loading likes:', error)
+  //   }
+  // }
 
   // Don't automatically load data to prevent errors when tables don't exist
   // Data will be loaded when user interacts with buttons

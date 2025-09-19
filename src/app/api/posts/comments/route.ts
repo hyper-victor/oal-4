@@ -40,10 +40,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Get current comments array
-    const currentComments = (post.comments as any[]) || []
+    const currentComments = (post.comments as Array<{
+      id: string
+      content: string
+      author_id: string
+      author?: {
+        id: string
+        display_name: string
+      }
+      created_at: string
+    }>) || []
     
     // Get author profile for display name
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile } = await supabase
       .from('profiles')
       .select('display_name')
       .eq('id', session.user.id)
@@ -130,7 +139,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Get comments from JSON column
-    const comments = (post.comments as any[]) || []
+    const comments = (post.comments as Array<{
+      id: string
+      content: string
+      author_id: string
+      author?: {
+        id: string
+        display_name: string
+      }
+      created_at: string
+    }>) || []
 
     // Fetch current display names for all comment authors
     const authorIds = comments.map(comment => comment.author_id).filter(Boolean)
